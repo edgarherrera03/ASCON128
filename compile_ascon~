@@ -1,0 +1,33 @@
+vdel -lib LIB_RTL -all
+vdel -lib LIB_BENCH -all
+
+vlib LIB/LIB_RTL
+vmap LIB_RTL LIB/LIB_RTL
+vlib LIB/LIB_BENCH
+vmap LIB_BENCH LIB/LIB_BENCH
+	
+VLOG_OPTS="-sv -svinputport=net"
+
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/ascon_pack.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/constant_addition.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/sbox.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/substitution_layer.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/diffusion_layer.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/permutation_xor.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/permutation.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/ascon_top.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/fsm_moore.sv
+vlog $VLOG_OPTS -work LIB_RTL ./SRC/RTL/counter_double_init.sv
+# Testbench
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/constant_addition_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/sbox_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/substitution_layer_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/diffusion_layer_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/permutation_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/permutation_xor_tb.sv
+vlog $VLOG_OPTS -work LIB_BENCH -L LIB_RTL SRC/BENCH/ascon_top_tb.sv
+
+VSIM_OPTS="-voptargs=+acc=rn"
+
+# Simulation
+vsim $VSIM_OPTS -L LIB_RTL LIB_BENCH.permutation_xor_tb
